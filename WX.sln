@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2008
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WX", "WX\WX.csproj", "{59B648D5-8F23-4253-A900-F74262DD4978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WXForm", "WXForm\WXForm.csproj", "{61215CC9-3644-4846-B01F-348ECDC93B61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Windows.Forms.Ribbon35", "System.Windows.Forms.Ribbon\System.Windows.Forms.Ribbon35.csproj", "{46A18A55-5AE8-49CE-91CD-C7421B642E7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WheaterSettings", "WheaterSettings\WheaterSettings.csproj", "{4E3B5F50-41E1-4790-892C-3AD627039E9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59B648D5-8F23-4253-A900-F74262DD4978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59B648D5-8F23-4253-A900-F74262DD4978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59B648D5-8F23-4253-A900-F74262DD4978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59B648D5-8F23-4253-A900-F74262DD4978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61215CC9-3644-4846-B01F-348ECDC93B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61215CC9-3644-4846-B01F-348ECDC93B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61215CC9-3644-4846-B01F-348ECDC93B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61215CC9-3644-4846-B01F-348ECDC93B61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46A18A55-5AE8-49CE-91CD-C7421B642E7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46A18A55-5AE8-49CE-91CD-C7421B642E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46A18A55-5AE8-49CE-91CD-C7421B642E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46A18A55-5AE8-49CE-91CD-C7421B642E7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E3B5F50-41E1-4790-892C-3AD627039E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E3B5F50-41E1-4790-892C-3AD627039E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E3B5F50-41E1-4790-892C-3AD627039E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E3B5F50-41E1-4790-892C-3AD627039E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {672FE9F3-A35C-4AB8-833B-8CE3035DEB6E}
+	EndGlobalSection
+EndGlobal
