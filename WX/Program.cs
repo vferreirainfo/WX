@@ -247,6 +247,7 @@ namespace WX
 
             public static Wheater RetomaObjetoWheater (string [] array)
             {
+                WindSettings wind = new WindSettings();
                 int contaTime = 0;
                 Wheater wx = new Wheater();
                 string expReg, matchValue, keepValue; // expressao regular variavel, resultado match e valor original da expressao
@@ -304,7 +305,12 @@ namespace WX
                             //reconhecer vento
 
                             expReg = "(\\s[0-9]{4,6}KT|\\sVRB[0-9]{2}KT|\\s[0-9]{5}G[0-9]{2}KT)";
-
+                            matchValue = Regex.Match(array[i], expReg).ToString();
+                            if (matchValue != string.Empty)
+                            {
+                                wind = wind.ReconheceInstrucoesDoVento(matchValue);
+                                wx.Wind.Add(wind);
+                            }
                         }
                     }
                 }

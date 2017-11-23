@@ -64,12 +64,20 @@ namespace WheaterSettings
             set { if(barometer>29.92) barometer = value; } // converter para HpA para saber a unidade !!
         }
 
+        public List<WindSettings> Wind
+        {
+            get { return windsGroup; }
+            set { windsGroup = value; }
+        }
+
 
         public int convertBaromterPressureToHPA(double barPressure)
         {
             int value = 0;
             return value;
         }
+
+
 
         
 
