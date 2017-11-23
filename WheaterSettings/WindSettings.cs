@@ -15,6 +15,18 @@ namespace WheaterSettings
         HavePLetterAssociated, //190P90KT
     }
 
+    public enum WindReportedOn
+    {
+        TAF,
+        METAR,
+    }
+
+    public enum UnityOfWindSpeed
+    {
+        KT,
+        MS,
+    }
+
 
     /// <summary>
     ///  // what is a wind
@@ -32,8 +44,11 @@ namespace WheaterSettings
     {
 
         TypeOfWind type;
-       
-        
+
+
+        public WindSettings()
+        {
+        }
 
         public WindSettings(int direction, int speed)
         {
@@ -80,108 +95,103 @@ namespace WheaterSettings
         /// <summary>
         /// The wind direction in the moment 
         /// </summary>
-        int directionOfWind { get; set; }
+        public int directionOfWind { get; set; }
 
         /// <summary>
         /// The wind speed
         /// </summary>
-        int windSpeed { get; set; }
+        public int windSpeed { get; set; }
 
 
         /// <summary>
         /// Minimum variable direction. In example above should be 120
         /// </summary>
-        int variableMinimumDirectionOfWind { get; set; }
+        public int variableMinimumDirectionOfWind { get; set; }
 
 
         /// <summary>
         /// Maximum variable direction. In example above should be 160
         /// </summary>
-        int variableMaximumDirectionOfWind { get; set; }
+        public int variableMaximumDirectionOfWind { get; set; }
 
 
         /// <summary>
         /// The speed unity reference 
         /// </summary>
-        string unityOfWindSpeed { get; set; }
+        public string unityOfWindSpeed { get; set; }
 
-        int windGustSpeed { get; set; }
+        public int windGustSpeed { get; set; }
 
 
-        TypeOfWind KindOfWindReported
+        public TypeOfWind KindOfWindReported
         {
             get { return type; }
             set { type = value; }
         }
 
         #region metodos
-        public bool ReconheceInstrucoesDoVento(string expressao)
+        public WindSettings ReconheceInstrucoesDoVento(string expressao)
         {
-            bool returnResult = true;
-            //Reconhecer direcção inicial 
-            string expRegular = "[0-3]{1}[0-9]{1}[0-9]{1} | VRB[0-9]{2}KT";
-            string tempVal = Regex.Match(expressao, expRegular).ToString();
+            string matchValue;
+            WindSettings wind = new WindSettings();
+            int percorreArray=0;
+            string[] separa = new string[2];
+            // reconhecer direcao
+            string expRegularTemp = "\\s[0-9]{3}";
+            
 
-            if (tempVal != "") // se reconhecemos algo
+            // separar direccao e velocidade
+            separa = Regex.Split(expressao, expRegularTemp, RegexOptions.Singleline); // guarda tudo do vento excepto direccao
+            separa[percorreArray] = Regex.Match(expressao, expRegularTemp).ToString(); // guarda direccao
+            wind.directionOfWind = Convert.ToInt32(separa[0]);
+            percorreArray++;//1
+
+            //encontrar unidade de velocidade no array separa indice 1
+            expRegularTemp = "KT";
+            matchValue = Regex.Match(separa[percorreArray], expRegularTemp).ToString();
+            if (matchValue != string.Empty)
             {
-
-                // se direccao está entre 0 e 360
-                if (Convert.ToInt32(tempVal) >= 0 && Convert.ToInt32(tempVal) <= 360)
-                {
-                    // set the wind direction
-                    this.directionOfWind = Convert.ToInt32(tempVal);
-                }
-
-                // caso contrario se VRB
-                if (tempVal == "VRB")
-                {
-                    type = TypeOfWind.Variable_Not_Know;
-                }
-
-            }
-            else if (tempVal == "")
-            {
-                // se nao existir vento retoma falso, pois nao adicionamos nada ao 
-                //objeto windssettings
-                returnResult = false;
+                wind.unityOfWindSpeed = matchValue;
             }
 
 
-            // direccao variavel em intervalo! nem sempre poderá ocorrer
-
-            string expReg = "(\\s[0-3]{1}[0-9]{1}[0-9]{1}V[0-3]{1}[0-9]{1}[0-9]{1})?";
-            tempVal = Regex.Match(expressao, expReg).ToString();
-            if (tempVal != "") // temos ventos variaveis do genero AAAVBBB
+            //reconhecer velocidade
+            expRegularTemp = "^[0-9]{2}KT";
+            matchValue = Regex.Match(separa[percorreArray], expRegularTemp).ToString();
+            if (matchValue != string.Empty)
             {
-                // match the first and match the second one
-                string expRegMinDir = "\\s[0-9]{3}V";
-                string expRegMaxDir = "V[0-9]{3}\\s";
+                matchValue = Regex.Match(separa[percorreArray], "[0-9]{2}").ToString();
+                if (matchValue != string.Empty)
+                    wind.windSpeed = Convert.ToInt32(matchValue);
 
-                string valRegMin, valRegMax;
-                valRegMin = Regex.Match(expressao, expRegMinDir).ToString();
-                if (valRegMin != "")
-                {
-                    //esta direcao encontra-se entre 0 e 360
-                    if (Convert.ToInt32(valRegMin) >= 0 && Convert.ToInt32(valRegMin) <= 360)
-                    {
-                        this.variableMinimumDirectionOfWind = Convert.ToInt32(valRegMin);
-                    }
-
-                }
-
-                valRegMax = Regex.Match(expressao, expRegMaxDir).ToString();
-                if (valRegMax != "")
-                {
-                    // esta direccao do vento variavel encontra-se entre 0 e 360
-                    if (Convert.ToInt32(valRegMax) >= 0 && Convert.ToInt32(valRegMax) <= 360)
-                    {
-                        this.variableMaximumDirectionOfWind = Convert.ToInt32(valRegMax);
-                    }
-
-                }
-                
             }
-            return returnResult;
+            // tentar reconhecer vento com velocidade Gust
+
+            expRegularTemp = "^[0-9]{2}G[0-9]{2}KT";
+            matchValue = Regex.Match(separa[percorreArray], expRegularTemp).ToString();
+            if (matchValue != string.Empty)
+            {
+
+                // reconhecer velocidade inicial (a que vem antes de G)
+                expRegularTemp = "[0-9]{2}G";
+                matchValue = Regex.Match(matchValue, expRegularTemp).ToString();
+                if (matchValue != string.Empty)
+                {
+                    matchValue = Regex.Match(matchValue, "[0-9]{2}").ToString();
+                    wind.windSpeed = Convert.ToInt32(matchValue);
+                }
+
+
+                //reconhecer velocidade de rajada (a que vem entre G e a unidade de vel)
+                expRegularTemp = "[0-9]{2}KT";
+                matchValue = Regex.Match(expressao, expRegularTemp).ToString();
+                if (matchValue != string.Empty)
+                {
+                    matchValue = Regex.Match(matchValue, "[0-9]{2}").ToString();
+                    wind.windGustSpeed = Convert.ToInt32(matchValue);
+                }
+            }
+            return wind;
         }
         #endregion
     }

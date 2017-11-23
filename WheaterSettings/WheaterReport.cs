@@ -9,7 +9,7 @@ namespace WheaterSettings
 {
     public class WheaterReport
     {
-        List<WheaterSettings> currentDayWheaterReports = new List<WheaterSettings>();
+        List<Wheater> currentDayWheaterReports = new List<Wheater>();
 
         public WheaterReport(){
 
@@ -24,7 +24,7 @@ namespace WheaterSettings
         public static bool ReconheceReporteMetereologicoAeronautico (string [] arrayMet)
         {
             bool result = true;
-            WheaterSettings wx = new WheaterSettings();
+            Wheater wx = new Wheater();
             string reconheceCodInternacional;
             string reconheceInstrucaoMETAR; // passo a passo
             string reconheceConjuntoTAF; // passo a passo

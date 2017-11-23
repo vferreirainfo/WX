@@ -8,12 +8,12 @@ namespace WheaterSettings
 {
     public static class WheaterManager
     {
-        static List<WheaterSettings> wheaterRreportsCollection = new List<WheaterSettings>();
+        static List<Wheater> wheaterRreportsCollection = new List<Wheater>();
 
 
         static bool pendentResult = false; // add a wheater report, imply a call to a method and that method need to return a result
 
-        public static bool AddNewWheaterReport(WheaterSettings wxSettings, string typeWx, out string errorMsg)
+        public static bool AddNewWheaterReport(Wheater wxSettings, string typeWx, out string errorMsg)
         {
             //?? try-catch
 
@@ -38,7 +38,7 @@ namespace WheaterSettings
             return false;
         }
 
-        public static List<WheaterSettings> WheaterReportCollection
+        public static List<Wheater> WheaterReportCollection
         {
             get { return wheaterRreportsCollection; }
             private set { wheaterRreportsCollection = value; }

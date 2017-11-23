@@ -14,7 +14,7 @@ namespace WheaterSettings
     }
 
 
-    public class WheaterSettings
+    public class Wheater
     {
 
 
@@ -28,7 +28,7 @@ namespace WheaterSettings
         int hpaPressure;
         string airpotICAOCode;
 
-        public WheaterSettings() { }
+        public Wheater() { }
 
         
         public KindOfWhaterReported TypeOfReport

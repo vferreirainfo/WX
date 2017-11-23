@@ -46,7 +46,7 @@
     <Compile Include="VisibilitySettings.cs" />
     <Compile Include="WheaterManager.cs" />
     <Compile Include="WheaterReport.cs" />
-    <Compile Include="WheaterSettings.cs" />
+    <Compile Include="Wheater.cs" />
     <Compile Include="WindSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
