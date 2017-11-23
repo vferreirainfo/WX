@@ -314,10 +314,11 @@ namespace WX
                             }
 
                             // reconhecer nuvens
-                            expReg = "(FEW[0-9]{3}|BKN[0-9]{3}|SCT[0-9]{3}|OVC[0-9]{3}|BKN[0-9]{3}TCU|FEW[0-9]{3}TCU)";
-                            while(Regex.IsMatch(array[i],expReg))
+                            expReg = "FEW[0-9]{3}(CB|TCU)?|BKN[0-9]{3}(CB|TCU)?|SCT[0-9]{3}(CB|TCU)?|OVC[0-9]{3}(CB|TCU)?";
+                            matchValue = Regex.Match(array[i], expReg).ToString();
+                            while (Regex.IsMatch(matchValue,expReg))
                             {
-                                cloud.ReconheceInstrucaoCloud(array[i]);
+                                cloud.ReconheceInstrucaoCloud(matchValue);
                             }
                         }
                     }

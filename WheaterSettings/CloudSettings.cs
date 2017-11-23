@@ -24,6 +24,7 @@ namespace WheaterSettings
             Poucas_Nuvens_Cumulus_congestus, //FEW000TCU
             Nuvens_Esparsas_Cumulonimbus, //SCT000CB
             Nublado_Nuvens_Cumulonimbus, //BKN000CB
+            Nuvens_Esparsas_Cumulus_congestus, //SCT000TCU
 
         }
 
@@ -71,22 +72,21 @@ namespace WheaterSettings
             isMatch = Regex.IsMatch(expressao, expReg);
             if(isMatch == true) // temos nuvens! necessitamos de determinar o tipo
             {
-                expReg = "FEW|BKN|SCT|OVC|FEW|[A-Z]{3}\\d{3}[A-Z]{2,3}";
+                expReg = "FEW[0-9]{3}|BKN[0-3]{3}|SCT[0-9]{3}|OVC[0-9]{3}|[A-Z]{3}\\d{3}[A-Z]{2,3}";
 
-                matchValue = Regex.Match(expressao, expReg).ToString();
-                if (matchValue == "FEW")
+                if (Regex.IsMatch(expressao, "FEW[0-9]{3}$"))
                 {
                     cloud.kindOfCloud = TypeOfCloud.Poucas_Nuvens;
                 }
-                else if (matchValue == "BKN")
+                else if (Regex.IsMatch(expressao, "BKN[0-9]{3}$"))
                 {
                     cloud.kindOfCloud = TypeOfCloud.Nublado;
                 }
-                else if (matchValue == "OVC")
+                else if (Regex.IsMatch(expressao, "SCT[0-9]{3}$"))
                 {
                     cloud.kindOfCloud = TypeOfCloud.Ceu_Encoberto;
                 }
-                else if (matchValue == "SCT")
+                else if (Regex.IsMatch(expressao, "OVC[0-9]{3}$"))
                 {
                     cloud.kindOfCloud = TypeOfCloud.Nuvens_Esparsas;
                 }
@@ -102,6 +102,10 @@ namespace WheaterSettings
                         if(matchValue=="BKNCB")
                         {
                             cloud.kindOfCloud = TypeOfCloud.Nublado_Nuvens_Cumulonimbus;
+                        }
+                        else if(matchValue=="FEWCB")
+                        {
+                            cloud.kindOfCloud = TypeOfCloud.Poucas_Nuvens_Cumulonimbus;
                         }
                     }
                 }
