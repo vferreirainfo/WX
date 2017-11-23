@@ -289,14 +289,22 @@ namespace WX
                             keepValue = matchValue;
 
                             //reconhecer hora
-                            expReg = "^[0-9]{2}";
+                            expReg = "^[0-9]{4}";
                             matchValue = Regex.Match(matchValue, expReg).ToString();
                             if (matchValue != string.Empty)
                             { 
                                 time[contaTime] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
                                 contaTime += 2;
-
+                                time[contaTime - 1] = matchValue[contaTime] + matchValue[contaTime+1].ToString();
+                                t = new TimeSpan(Convert.ToInt32(time[contaTime - 2]), Convert.ToInt32(time[contaTime - 1]),0);
+                                dt = dt + t;
                             }
+
+
+                            //reconhecer vento
+
+                            expReg = "(\\s[0-9]{4,6}KT|\\sVRB[0-9]{2}KT|\\s[0-9]{5}G[0-9]{2}KT)";
+
                         }
                     }
                 }
