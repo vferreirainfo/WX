@@ -51,7 +51,6 @@ namespace WheaterSettings
             kindOfCloud = typeCloud;
             cloudClass = classCloud;
 
-
         }
 
 
