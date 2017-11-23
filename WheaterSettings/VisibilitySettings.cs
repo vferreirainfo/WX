@@ -14,7 +14,7 @@ namespace WheaterSettings
 
     }
 
-    class VisibilitySettings:IVisibilitySettings
+    public class VisibilitySettings:IVisibilitySettings
     {
         
         int visibility;
@@ -37,6 +37,28 @@ namespace WheaterSettings
             }
         }
 
+        public VisibilitySettings ReconhoceCondicoesVisibilidade(string expressao)
+        {
+
+            string expReg, matchValue, keepValue;
+            VisibilitySettings vis = new VisibilitySettings();
+
+            //expressao regular geral para visibilidade
+
+
+            //investigar expressões
+            expReg = "[0-9]{4}|[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
+            matchValue = Regex.Match(expressao, expReg).ToString();
+            if (matchValue != string.Empty) // temos condicoes de visibilidade
+            {
+                if (Regex.IsMatch(expressao, "[0-9]{4}"))
+                {
+                    vis.visibilityLength = Convert.ToInt32(expressao);
+                }
+            }
+            return vis;
+        }
+
     }
 
     public interface IVisibilitySettings
@@ -48,6 +70,8 @@ namespace WheaterSettings
 
     #region metodos
    
-
+    
+    
+    
     #endregion
 }

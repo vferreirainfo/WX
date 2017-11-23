@@ -247,6 +247,9 @@ namespace WX
 
             public static Wheater RetomaObjetoWheater (string [] array)
             {
+                //Existe a necessidade de dividir o metar após o vento
+                string[] divideCodigo = new string[2];
+
                 CloudSettings cloud = new CloudSettings();
                 WindSettings wind = new WindSettings();
                 int contaTime = 0;
@@ -254,6 +257,7 @@ namespace WX
                 string expReg, matchValue, keepValue; // expressao regular variavel, resultado match e valor original da expressao
                 DateTime dt = new DateTime();
                 TimeSpan t;
+                VisibilitySettings visibility = new VisibilitySettings();
                 string[] time = new string [2]; // guarda hora e minuto em 2 indices
 
                 //percorrer array 
@@ -313,13 +317,33 @@ namespace WX
                                 wx.Wind.Add(wind);
                             }
 
+                            //divisao
+                            expReg = expReg + "\\s" + "[0-9]{4,5}|[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
+                            matchValue = Regex.Match(array[i], expReg).ToString();
+                            if (matchValue != string.Empty)
+                            {
+                                divideCodigo = Regex.Split(matchValue, "\\s", RegexOptions.ExplicitCapture);
+                                matchValue = divideCodigo[2];
+                            }
+
+                            // reconhecer visibilidade
+                            expReg = "[0-9]{4,5}|[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
+                            matchValue = Regex.Match(matchValue, expReg).ToString();
+                            if(matchValue != string.Empty)
+                            {
+                                visibility = visibility.ReconhoceCondicoesVisibilidade(matchValue);
+                            }
+
                             // reconhecer nuvens
                             expReg = "FEW[0-9]{3}(CB|TCU)?|BKN[0-9]{3}(CB|TCU)?|SCT[0-9]{3}(CB|TCU)?|OVC[0-9]{3}(CB|TCU)?";
                             matchValue = Regex.Match(array[i], expReg).ToString();
                             while (Regex.IsMatch(matchValue,expReg))
                             {
-                                cloud.ReconheceInstrucaoCloud(matchValue);
+                                cloud= cloud.ReconheceInstrucaoCloud(matchValue);
+                                wx.Cloud.Add(cloud);
                             }
+
+                           
                         }
                     }
                 }

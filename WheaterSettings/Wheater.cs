@@ -70,6 +70,12 @@ namespace WheaterSettings
             set { windsGroup = value; }
         }
 
+        public List<CloudSettings> Cloud
+        {
+            get { return cloudsGroup; }
+            set { cloudsGroup = value; }
+        }
+
 
         public int convertBaromterPressureToHPA(double barPressure)
         {
