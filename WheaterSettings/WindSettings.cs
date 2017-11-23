@@ -45,6 +45,8 @@ namespace WheaterSettings
 
         TypeOfWind type;
 
+        WindReportedOn kindOfReport;
+
 
         public WindSettings()
         {
@@ -127,6 +129,12 @@ namespace WheaterSettings
         {
             get { return type; }
             set { type = value; }
+        }
+
+        public WindReportedOn WindTypeOfReport
+        {
+            get { return kindOfReport; }
+            set { kindOfReport = value; }
         }
 
         #region metodos

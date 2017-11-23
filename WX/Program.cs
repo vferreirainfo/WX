@@ -5,6 +5,7 @@ using System.Text;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using System.Text.RegularExpressions;
+using WheaterSettings;
 
 namespace WX
 {
@@ -23,8 +24,9 @@ namespace WX
 
             //TransformaMetarEmXML(metarDevolvido);
             bool estado;
-            //string estado;
-            AnalisaEPurificaFicheiro.AnalisaFicheiroTexto(text, out estado);
+            string [] arrayCodMet = new string[30];
+            arrayCodMet = AnalisaEPurificaFicheiro.AnalisaFicheiroTexto(text, out estado);
+            AnalisaEPurificaFicheiro.RetomaObjetoWheater(arrayCodMet);
         }
 
 
@@ -241,6 +243,64 @@ namespace WX
 
                 estado = devolveResultadoFinal;
                 return returnResult;
+            }
+
+            public static Wheater RetomaObjetoWheater (string [] array)
+            {
+                int contaTime = 0;
+                Wheater wx = new Wheater();
+                string expReg, matchValue, keepValue; // expressao regular variavel, resultado match e valor original da expressao
+                DateTime dt = new DateTime();
+                TimeSpan t;
+                string[] time = new string [2]; // guarda hora e minuto em 2 indices
+
+                //percorrer array 
+                for (int i=0; i<array.Length; i++)
+                {
+                    if (array[i] == string.Empty)
+                        break;
+                    if(i==1) // temos um METAR
+                    {
+                        wx.TypeOfReport = KindOfWhaterReported.Metar;
+
+                        // expressao regular para aeroporto
+                        expReg = "[A-Z]{4}";
+                        matchValue = Regex.Match(array[i], expReg).ToString();
+                        if(matchValue != string.Empty)
+                        {
+                            //guardar aeroporto
+                            wx.CodigoICAO = matchValue;
+                        }
+
+
+                        //hora e data
+                        dt = DateTime.Today;
+
+                        //reconhecer hora e minutos
+                        expReg = "[0-9]{4}Z";
+                        matchValue = Regex.Match(array[i], expReg).ToString();
+                        if(matchValue != string.Empty)
+                        {
+
+                            //substituir Z por ""
+                            matchValue = Regex.Replace(matchValue, "Z", "");
+
+                            //guardar hora/minuto numa segunda string
+                            keepValue = matchValue;
+
+                            //reconhecer hora
+                            expReg = "^[0-9]{2}";
+                            matchValue = Regex.Match(matchValue, expReg).ToString();
+                            if (matchValue != string.Empty)
+                            { 
+                                time[contaTime] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
+                                contaTime += 2;
+
+                            }
+                        }
+                    }
+                }
+                return wx;
             }
         }
     }
