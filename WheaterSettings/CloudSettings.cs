@@ -76,27 +76,46 @@ namespace WheaterSettings
 
                 if (Regex.IsMatch(expressao, "FEW[0-9]{3}$"))
                 {
+                    matchValue = Regex.Match(expressao, "[0-9]{3}").ToString();
+                    if (matchValue != string.Empty)
+                        cloud.level = Convert.ToInt32(matchValue)*100;
                     cloud.kindOfCloud = TypeOfCloud.Poucas_Nuvens;
+
                 }
                 else if (Regex.IsMatch(expressao, "BKN[0-9]{3}$"))
                 {
+                    matchValue = Regex.Match(expressao, "[0-9]{3}").ToString();
+                    if (matchValue != string.Empty)
+                        cloud.level = Convert.ToInt32(matchValue)*100;
                     cloud.kindOfCloud = TypeOfCloud.Nublado;
                 }
                 else if (Regex.IsMatch(expressao, "SCT[0-9]{3}$"))
                 {
+                    matchValue = Regex.Match(expressao, "[0-9]{3}").ToString();
+                    if (matchValue != string.Empty)
+                        cloud.level = Convert.ToInt32(matchValue)*100;
                     cloud.kindOfCloud = TypeOfCloud.Ceu_Encoberto;
                 }
                 else if (Regex.IsMatch(expressao, "OVC[0-9]{3}$"))
                 {
+                    matchValue = Regex.Match(expressao, "[0-9]{3}").ToString();
+                    if (matchValue != string.Empty)
+                        cloud.level = Convert.ToInt32(matchValue)*100;
                     cloud.kindOfCloud = TypeOfCloud.Nuvens_Esparsas;
                 }
                 else
                 {
+                    string numExpreg = "\\d{3}";
                     expReg = "[A-Z]{3}\\d{3}[A-Z]{2,3}";
 
                     //tentar encontrar nuvens "compostas"
                     if (Regex.IsMatch(expressao, expReg))
                     {
+                        //fazer match a altitude de nuvens e guardar a altitude
+                        matchValue = Regex.Match(expressao, numExpreg).ToString();
+                        if (matchValue != string.Empty)
+                            cloud.level = Convert.ToInt32(matchValue)*100;
+
 
                         matchValue = Regex.Replace(expressao, "\\d{3}", "");
                         if(matchValue=="BKNCB")
