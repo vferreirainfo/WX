@@ -247,6 +247,7 @@ namespace WX
 
             public static Wheater RetomaObjetoWheater (string [] array)
             {
+                CloudSettings cloud = new CloudSettings();
                 WindSettings wind = new WindSettings();
                 int contaTime = 0;
                 Wheater wx = new Wheater();
@@ -310,6 +311,13 @@ namespace WX
                             {
                                 wind = wind.ReconheceInstrucoesDoVento(matchValue);
                                 wx.Wind.Add(wind);
+                            }
+
+                            // reconhecer nuvens
+                            expReg = "(FEW[0-9]{3}|BKN[0-9]{3}|SCT[0-9]{3}|OVC[0-9]{3}|BKN[0-9]{3}TCU|FEW[0-9]{3}TCU)";
+                            while(Regex.IsMatch(array[i],expReg))
+                            {
+                                cloud.ReconheceInstrucaoCloud(array[i]);
                             }
                         }
                     }
