@@ -339,7 +339,7 @@ namespace WX
                         matchValue = Regex.Match(arrayMETAR[j], expReg).ToString();
                         string matchVarWinds = Regex.Match(arrayMETAR[j + 1], variableWindRegex).ToString();
 
-
+                        //sapo
                         
                         if (matchValue != string.Empty && matchVarWinds != string.Empty)
                         {
