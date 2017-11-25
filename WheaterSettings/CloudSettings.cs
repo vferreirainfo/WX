@@ -126,6 +126,10 @@ namespace WheaterSettings
                         {
                             cloud.kindOfCloud = TypeOfCloud.Poucas_Nuvens_Cumulonimbus;
                         }
+                        else if(matchValue =="SCTCB")
+                        {
+                            //cloud.kindOfCloud = TypeOfCloud.Poucas_Nuvens_Cumulonimbus;
+                        }
                     }
                 }
             }

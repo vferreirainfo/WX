@@ -138,14 +138,14 @@ namespace WheaterSettings
         }
 
         #region metodos
-        public WindSettings ReconheceInstrucoesDoVento(string expressao)
+        public WindSettings ReconheceInstrucoesDoVento(string expressao, string expressaoVentoVariavel)
         {
             string matchValue;
             WindSettings wind = new WindSettings();
             int percorreArray=0;
             string[] separa = new string[2];
             // reconhecer direcao
-            string expRegularTemp = "\\s[0-9]{3}";
+            string expRegularTemp = "[0-9]{3}";
             
 
             // separar direccao e velocidade
@@ -197,6 +197,35 @@ namespace WheaterSettings
                 {
                     matchValue = Regex.Match(matchValue, "[0-9]{2}").ToString();
                     wind.windGustSpeed = Convert.ToInt32(matchValue);
+                }
+            }
+
+
+            // reconhecer vento variavel
+
+            string expressaoOriginal = expressaoVentoVariavel;
+            expRegularTemp = "([0-9]{3}V[0-9]{3})?";
+            matchValue = Regex.Match(expressaoVentoVariavel, expRegularTemp).ToString();
+            if (matchValue != string.Empty)
+            {
+                wind.KindOfWindReported = TypeOfWind.Variable;
+                //reconhecer direccao minima
+                expRegularTemp = "^[0-9]{3}V";
+                matchValue = Regex.Match(matchValue, expRegularTemp).ToString();
+                if (matchValue != string.Empty)
+                {
+                    matchValue = Regex.Replace(matchValue, "V", "");
+                    wind.variableMinimumDirectionOfWind = Convert.ToInt32(matchValue);
+                }
+                //reconhecer direccao maxima
+                expRegularTemp = "V[0-9]{3}";
+                matchValue = Regex.Match(expressaoVentoVariavel, expRegularTemp).ToString();
+                if (matchValue != string.Empty)
+                {
+
+                    //substituir V por ""
+                    matchValue = Regex.Replace(matchValue, "V", "");
+                    wind.variableMaximumDirectionOfWind = Convert.ToInt32(matchValue);
                 }
             }
             return wind;

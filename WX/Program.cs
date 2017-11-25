@@ -24,7 +24,7 @@ namespace WX
 
             //TransformaMetarEmXML(metarDevolvido);
             bool estado;
-            string [] arrayCodMet = new string[30];
+            string[] arrayCodMet = new string[30];
             arrayCodMet = AnalisaEPurificaFicheiro.AnalisaFicheiroTexto(text, out estado);
             AnalisaEPurificaFicheiro.RetomaObjetoWheater(arrayCodMet);
         }
@@ -245,8 +245,9 @@ namespace WX
                 return returnResult;
             }
 
-            public static Wheater RetomaObjetoWheater (string [] array)
+            public static Wheater RetomaObjetoWheater(string[] array)
             {
+                //variaveis -->
                 //Existe a necessidade de dividir o metar após o vento
                 string[] divideCodigo = new string[2];
 
@@ -258,36 +259,60 @@ namespace WX
                 DateTime dt = new DateTime();
                 TimeSpan t;
                 VisibilitySettings visibility = new VisibilitySettings();
-                string[] time = new string [2]; // guarda hora e minuto em 2 indices
+                TemperatureSettings temp = new TemperatureSettings();
+                List<string> conjuntoCodigosTAF = new List<string>();
+                string[] time = new string[2]; // guarda hora e minuto em 2 indices
+                string[] arrayMETAR = new string[15];
+                string[] arrayTemp = new string[15];
+                bool result;
+
+
+                //-->Método
 
                 //percorrer array 
-                for (int i=0; i<array.Length; i++)
+                #region separaMETAR_E_TAF
+                for (int i = 0; i < array.Length; i++)
                 {
-                    if (array[i] == string.Empty)
+                    if (array[i] == null)
                         break;
-                    if(i==1) // temos um METAR
+                    if (i == 1) // temos um METAR
                     {
-                        wx.TypeOfReport = KindOfWhaterReported.Metar;
+                        //percorrer linha 1 e separar para novo array cada instrucao
 
-                        // expressao regular para aeroporto
-                        expReg = "[A-Z]{4}";
-                        matchValue = Regex.Match(array[i], expReg).ToString();
-                        if(matchValue != string.Empty)
+                        arrayMETAR = Regex.Split(array[i], "\\s", RegexOptions.Singleline);
+                    }
+                    if (i > 1)
+                    {
+                        arrayTemp = Regex.Split(array[i], "\\s", RegexOptions.Singleline);
+                        foreach (string s in arrayTemp)
                         {
-                            //guardar aeroporto
-                            wx.CodigoICAO = matchValue;
+                            conjuntoCodigosTAF.Add(s);
                         }
+                        i++;
+                    }
+                }
+                #endregion
 
-
-                        //hora e data
+                //METAR
+                #region decifraMETAR
+                for (int j = 0; j < arrayMETAR.Length; j++)
+                {
+                    expReg = "[A-Z]{4}";
+                    //1º instrucao: aeroporto
+                    if (Regex.Match(arrayMETAR[j], expReg).ToString() != string.Empty)
+                    {
+                        wx.CodigoICAO = Regex.Match(arrayMETAR[j], expReg).ToString();
+                    }
+                    else
+                    {
+                        // Data e hora
                         dt = DateTime.Today;
 
                         //reconhecer hora e minutos
                         expReg = "[0-9]{4}Z";
-                        matchValue = Regex.Match(array[i], expReg).ToString();
-                        if(matchValue != string.Empty)
+                        matchValue = Regex.Match(array[j], expReg).ToString();
+                        if (matchValue != string.Empty && j==1) // data está na posicao 1 do array
                         {
-
                             //substituir Z por ""
                             matchValue = Regex.Replace(matchValue, "Z", "");
 
@@ -298,57 +323,172 @@ namespace WX
                             expReg = "^[0-9]{4}";
                             matchValue = Regex.Match(matchValue, expReg).ToString();
                             if (matchValue != string.Empty)
-                            { 
+                            {
                                 time[contaTime] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
                                 contaTime += 2;
-                                time[contaTime - 1] = matchValue[contaTime] + matchValue[contaTime+1].ToString();
-                                t = new TimeSpan(Convert.ToInt32(time[contaTime - 2]), Convert.ToInt32(time[contaTime - 1]),0);
+                                time[contaTime - 1] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
+                                t = new TimeSpan(Convert.ToInt32(time[contaTime - 2]), Convert.ToInt32(time[contaTime - 1]), 0);
                                 dt = dt + t;
+
                             }
-
-
-                            //reconhecer vento
-
-                            expReg = "(\\s[0-9]{4,6}KT|\\sVRB[0-9]{2}KT|\\s[0-9]{5}G[0-9]{2}KT)";
-                            matchValue = Regex.Match(array[i], expReg).ToString();
-                            if (matchValue != string.Empty)
-                            {
-                                wind = wind.ReconheceInstrucoesDoVento(matchValue);
-                                wx.Wind.Add(wind);
-                            }
-
-                            //divisao
-                            expReg = expReg + "\\s" + "[0-9]{4,5}|[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
-                            matchValue = Regex.Match(array[i], expReg).ToString();
-                            if (matchValue != string.Empty)
-                            {
-                                divideCodigo = Regex.Split(matchValue, "\\s", RegexOptions.ExplicitCapture);
-                                matchValue = divideCodigo[2];
-                            }
-
-                            // reconhecer visibilidade
-                            expReg = "[0-9]{4,5}|[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
-                            matchValue = Regex.Match(matchValue, expReg).ToString();
-                            if(matchValue != string.Empty)
-                            {
-                                visibility = visibility.ReconhoceCondicoesVisibilidade(matchValue);
-                            }
-
-                            // reconhecer nuvens
-                            expReg = "FEW[0-9]{3}(CB|TCU)?|BKN[0-9]{3}(CB|TCU)?|SCT[0-9]{3}(CB|TCU)?|OVC[0-9]{3}(CB|TCU)?";
-                            matchValue = Regex.Match(array[i], expReg).ToString();
-                            while (Regex.IsMatch(matchValue,expReg))
-                            {
-                                cloud= cloud.ReconheceInstrucaoCloud(matchValue);
-                                wx.Cloud.Add(cloud);
-                            }
-
-                           
                         }
-                    }
+
+                        //reconhecer vento
+                        expReg = "[0-9]{4,6}KT|sVRB[0-9]{2}KT|[0-9]{5}G[0-9]{2}KT";
+                        string variableWindRegex = "([0-9]{3}V[0-9]{3})?";
+                        matchValue = Regex.Match(arrayMETAR[j], expReg).ToString();
+                        string matchVarWinds = Regex.Match(arrayMETAR[j + 1], variableWindRegex).ToString();
+
+
+                        
+                        if (matchValue != string.Empty && matchVarWinds != string.Empty)
+                        {
+                           
+                            wind = wind.ReconheceInstrucoesDoVento(matchValue, matchVarWinds);
+                            
+                            //reconhecer vento variavel com variancia conhecida (120V160)
+                            //Tal expressao pode ocorrer (ou não) quer em METAR quer em TAF
+                            wx.Wind.Add(wind);
+                        }
+                        else if(matchValue != string.Empty && matchVarWinds == string.Empty)
+                        {
+
+                            wind = wind.ReconheceInstrucoesDoVento(matchValue, "");
+
+                            wx.Wind.Add(wind);
+
+                        }
+
+
+
+
+                        //reconhecer visibilidade
+                        expReg = "^[0-9]{4}|^[0-9]{2}SM|CAVOK|1/2SM|3/4SM|P[0-9]{1}SM";
+                        matchValue = Regex.Match(arrayMETAR[j], expReg).ToString();
+                        if (matchValue != string.Empty && j==3)
+                        {
+                            visibility = visibility.ReconhoceCondicoesVisibilidade(matchValue);
+                            //Adicionar visibilidade a lista
+                            wx.Visibility.Add(visibility);
+
+                        }
+
+                        // reconhecer nuvens
+                        expReg = "FEW[0-9]{3}(CB|TCU)?|BKN[0-9]{3}(CB|TCU)?|SCT[0-9]{3}(CB|TCU)?|OVC[0-9]{3}(CB|TCU)?";
+                        if (Regex.Match(arrayMETAR[j], expReg).ToString() != string.Empty)
+                        {
+                            cloud = cloud.ReconheceInstrucaoCloud(Regex.Match(arrayMETAR[j], expReg).ToString());
+                            wx.Cloud.Add(cloud);
+                        }
+
+                        //reconhece temperatura
+                        string matchValueII; // nas nuvens apanha-se numeros de altitude com tamanho 3!
+                        expReg = "^[M]?[0-9]{2}/[M]?[0-9]{2}|^[TX]?[M]?[0-9]{2}|^[TN]?[M]?[0-9]{2}";
+                        matchValueII = Regex.Match(arrayMETAR[j], expReg).ToString();
+                        if (matchValueII != matchValue && j>4)
+                        {
+                            temp.TypeReport = TemperatureReportedOn.METAR;
+                            temp = temp.ReconheceCodificacaoTemperaturaMinMax(matchValueII);
+                            wx.Temperature.Add(temp);
+                        }
+
+
+                        //reconhece altimetro
+                        expReg = "A[0-9]{4}|Q[0-9]{4}";
+                        matchValue = Regex.Match(arrayMETAR[j], expReg).ToString();
+                        if(matchValue != string.Empty)
+                        {
+                            keepValue = matchValue;
+                            //Testar se é A ou Q que faz match
+                            matchValue = Regex.Match(matchValue, "A|Q").ToString();
+                            if(matchValue == "A")
+                            {
+                                wx.AltimeterSettingUnits = AltimeterUnits.inHg;
+                                //fazer match aos quatro numeros após o A
+                                expReg = "[^A][0-9]{4}";
+                                matchValue = Regex.Match(keepValue, expReg).ToString();
+                                if (matchValue != string.Empty)
+                                    wx.Barometer = Convert.ToInt32(matchValue);
+                            }
+                            else if(matchValue == "Q")
+                            {
+                                wx.AltimeterSettingUnits = AltimeterUnits.hPa;
+
+                                //fazer match aos quatro numeros após o A
+                                expReg = "[^Q][0-9]{4}";
+                                matchValue = Regex.Match(keepValue, expReg).ToString();
+                                if (matchValue != string.Empty)
+                                    wx.Barometer = Convert.ToInt32(matchValue);
+
+                            }
+                        }
+                        
+                   }
+                   
                 }
+                #endregion
+
+                //TAF
+                #region decifraTAF
+                //Para cada string na lista verificar ... se:
+                foreach (string s in conjuntoCodigosTAF)
+                {
+                    //hora temporaria
+
+                    //detectar dia e hora de alerta ... primeiros dois digitos
+                    expReg = "[0-9]{6}";
+                    matchValue = Regex.Match(s, expReg).ToString();
+                    if(matchValue != string.Empty)
+                    {
+                        expReg = "[0-9]{2}";
+                        matchValue = Regex.Match(s, expReg).ToString();
+                        if(matchValue!=string.Empty)
+                        {
+                            //guardar dia (considerando o mês atual)
+                            dt = dt.AddDays(Convert.ToInt32(matchValue));
+                            matchValue = matchValue + "/" + dt.Month + "/" + dt.Year;
+                            dt = DateTime.Parse(matchValue);
+                        }
+
+                        //apanhar hora
+                        expReg = "[0-9]{4}Z";
+                        matchValue = Regex.Match(s, expReg).ToString();
+                        if (matchValue != string.Empty)
+                        {
+                            matchValue = Regex.Replace(matchValue, "Z", "");
+                            //reconhecer hora
+                            expReg = "^[0-9]{4}";
+                            matchValue = Regex.Match(matchValue, expReg).ToString();
+                            if (matchValue != string.Empty)
+                            {
+                                contaTime = 0;
+                                time[contaTime] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
+                                contaTime += 2;
+                                time[contaTime - 1] = matchValue[contaTime] + matchValue[contaTime + 1].ToString();
+                                t = new TimeSpan(Convert.ToInt32(time[contaTime - 2]), Convert.ToInt32(time[contaTime - 1]), 0);
+                                dt = dt + t;
+                                
+                            }    
+                        }
+
+                        // apanhar vento
+                        expReg = "[0-9]{4,6}KT|sVRB[0-9]{2}KT|[0-9]{5}G[0-9]{2}KT";
+                        matchValue = Regex.Match(s, expReg).ToString();
+                        if(matchValue != string.Empty)
+                        {
+
+                        }
+
+                    }
+
+
+                }
+                #endregion
+
                 return wx;
             }
+
+            
         }
     }
 }
