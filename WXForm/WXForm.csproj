@@ -82,6 +82,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\templow.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\System.Windows.Forms.Ribbon\System.Windows.Forms.Ribbon35.csproj">
       <Project>{46a18a55-5ae8-49ce-91cd-c7421b642e7e}</Project>
       <Name>System.Windows.Forms.Ribbon35</Name>
